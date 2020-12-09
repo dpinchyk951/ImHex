@@ -296,7 +296,6 @@ namespace hex {
         auto [parseResult, ast] = parser.parse(tokens);
         if (parseResult.failed()) {
             this->m_textEditor.SetErrorMarkers({ parser.getError() });
-            printf("%d %s\n", parser.getError().first, parser.getError().second.c_str());
             return;
         }
 

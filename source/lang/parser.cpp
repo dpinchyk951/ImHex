@@ -3,6 +3,9 @@
 #include "helpers/utils.hpp"
 
 #include <optional>
+#include <variant>
+
+#define MATCHES(x) begin() && x
 
 namespace hex::lang {
 
@@ -10,19 +13,19 @@ namespace hex::lang {
 
     }
 
-    std::vector<ASTNode*> Parser::parseStatement() {
-        std::vector<ASTNode*> program;
-        SCOPE_EXIT( for (auto &node : program) delete node; );
+    ASTNode* Parser::parseUsingDeclaration() {
+        if (this->m_curr[-2].type == Token::Type::Identifier)
+            return new ASTNodeTypeDecl(getLineNumber(-5), Token::ValueType::CustomType, getValue<std::string>(-4), getValue<std::string>(-2));
+        else
+            return new ASTNodeTypeDecl(getLineNumber(-5), getValue<Token::ValueType>(-2), getValue<std::string>(-4));
+    }
 
-        if (tryConsume(KEYWORD_STRUCT, IDENTIFIER, SEPARATOR_CURLYBRACKETOPEN)) {
-            printf("Struct\n");
-        } else if (tryConsume(KEYWORD_UNION, IDENTIFIER, SEPARATOR_CURLYBRACKETOPEN)) {
-            printf("Union\n");
-        } else if (tryConsume(KEYWORD_ENUM, IDENTIFIER, SEPARATOR_CURLYBRACKETOPEN)) {
-            printf("Enum\n");
-        } else throwParseError("Invalid sequence");
+    ASTNode* Parser::parseStatement() {
+        if (MATCHES(sequence(KEYWORD_USING, IDENTIFIER, OPERATOR_ASSIGNMENT) && variant(IDENTIFIER, VALUETYPE_ANY) && sequence(SEPARATOR_ENDOFEXPRESSION))) {
+            return parseUsingDeclaration();
+        } else throwParseError("Invalid sequence", 0);
 
-        return program;
+        return nullptr;
     }
 
     std::pair<Result, std::vector<ASTNode*>> Parser::parse(const std::vector<Token> &tokens) {
@@ -32,7 +35,7 @@ namespace hex::lang {
             auto program = parseTillToken(SEPARATOR_ENDOFPROGRAM);
 
             if (program.empty() || this->m_curr != tokens.end())
-                throwParseError("Program is empty!");
+                throwParseError("Program is empty!", 0);
 
             return { ResultSuccess, program };
         } catch (ParseError &e) {

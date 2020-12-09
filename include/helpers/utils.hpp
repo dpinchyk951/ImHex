@@ -16,8 +16,6 @@
 #include <arpa/inet.h>
 #endif
 
-#include "lang/token.hpp"
-
 namespace hex {
 
     template<typename ... Args>
@@ -41,22 +39,6 @@ namespace hex {
     [[nodiscard]] constexpr inline u64 signExtend(u64 value, u8 currWidth, u8 targetWidth) {
         u64 mask = 1LLU << (currWidth - 1);
         return (((value ^ mask) - mask) << (64 - targetWidth)) >> (64 - targetWidth);
-    }
-
-    [[nodiscard]] constexpr inline bool isUnsigned(const lang::Token::ValueType type) {
-        return (static_cast<u32>(type) & 0x0F) == 0x00;
-    }
-
-    [[nodiscard]] constexpr inline bool isSigned(const lang::Token::ValueType type) {
-        return (static_cast<u32>(type) & 0x0F) == 0x01;
-    }
-
-    [[nodiscard]] constexpr inline bool isFloatingPoint(const lang::Token::ValueType type) {
-        return (static_cast<u32>(type) & 0x0F) == 0x02;
-    }
-
-    [[nodiscard]] constexpr inline u32 getTypeSize(const lang::Token::ValueType type) {
-        return static_cast<u32>(type) >> 4;
     }
 
     std::string toByteString(u64 bytes);
