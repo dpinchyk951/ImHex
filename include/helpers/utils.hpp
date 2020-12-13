@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #ifdef __MINGW32__
@@ -15,6 +16,9 @@
 #else
 #include <arpa/inet.h>
 #endif
+
+#define TOKEN_CONCAT_IMPL(x, y) x ## y
+#define TOKEN_CONCAT(x, y) TOKEN_CONCAT_IMPL(x, y)
 
 namespace hex {
 
@@ -83,17 +87,18 @@ namespace hex {
 
     std::vector<u8> readFile(std::string_view path);
 
-    #define SCOPE_EXIT(func) ScopeExit scopeGuard##__COUNTER__([&] { func })
+    #define SCOPE_EXIT(func) ScopeExit TOKEN_CONCAT(scopeGuard, __COUNTER__)([&] { func })
     class ScopeExit {
     public:
-        ScopeExit(std::function<void()> func) : m_func(func) {}
-        ~ScopeExit() { if (this->m_func != nullptr) this->m_func(); }
+        ScopeExit(std::function<void()> func) : m_func(std::move(func)) {}
+        ~ScopeExit() { if (!this->m_released) this->m_func(); }
 
         void release() {
-            this->m_func = nullptr;
+            this->m_released = true;
         }
 
     private:
+        bool m_released = false;
         std::function<void()> m_func;
     };
 
