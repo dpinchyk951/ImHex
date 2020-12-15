@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <type_traits>
 
 using u8    = std::uint8_t;
 using u16   = std::uint16_t;
@@ -14,6 +15,13 @@ using s16   = std::int16_t;
 using s32   = std::int32_t;
 using s64   = std::int64_t;
 using s128  = __int128_t;
+
+template<>
+struct std::is_integral<u128> : public std::true_type { };
+template<>
+struct std::is_integral<s128> : public std::true_type { };
+template<>
+struct std::is_signed<s128> : public std::true_type { };
 
 #include "lang/result.hpp"
 #include "lang/results.hpp"
