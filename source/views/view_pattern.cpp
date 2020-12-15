@@ -290,10 +290,9 @@ namespace hex {
 
         hex::ScopeExit deleteAst([&ast]{ for(auto &node : ast) delete node; });
 
-        return;
-
         hex::lang::Validator validator;
         auto validatorResult = validator.validate(ast);
+        validator.printAST(ast);
         if (!validatorResult) {
             this->m_textEditor.SetErrorMarkers({ validator.getError() });
             return;
@@ -307,7 +306,7 @@ namespace hex {
         }
         this->m_patternData = patternData;
 
-        //this->postEvent(Events::PatternChanged);
+        this->postEvent(Events::PatternChanged);
     }
 
 }
