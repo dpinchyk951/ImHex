@@ -226,9 +226,9 @@ namespace hex {
             this->m_globalScale = this->m_fontScale = std::midpoint(xscale, yscale);
         }
 
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 
         this->m_window = glfwCreateWindow(1280 * this->m_globalScale, 720 * this->m_globalScale, "ImHex", nullptr, nullptr);
